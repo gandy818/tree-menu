@@ -15,6 +15,13 @@ function App() {
       idx: 1,
       parentIdx: 0,
       name: '메뉴1',
+      child: [
+        {
+          idx: 2,
+          parentIdx: 1,
+          name: '메뉴1의 자식 메뉴',
+        },
+      ],
     },
   ]);
 
@@ -70,10 +77,10 @@ function App() {
   return (
     <div>
       <div className="border rounded-lg m-4 py-2 px-4">
-        {/* 리스트 */}
         {menu.map((menuItem) => {
           return (
             <Fragment key={menuItem.idx}>
+              {/* 재귀 컴포넌트 */}
               <MenuRecursively node={menuItem} addMenu={addMenu} maxMenuIdx={maxMenuIdx} />
             </Fragment>
           );
