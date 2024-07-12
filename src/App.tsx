@@ -67,6 +67,28 @@ function App() {
     setMenu(newMenu.parentIdx === 0 ? [...menu, newMenu] : addRecursively(menu));
   };
 
+  // 수정 함수
+  const modifyMenu = (menu: MenuType) => {
+    // 수정 재귀 함수
+    const modifyRecursively = (menus: MenuType[]): MenuType[] => {
+      return menus.map((menusItem) => {
+        // 맵 돌려서 만난 인덱스와 수정하려는 인덱스가 같으면
+        if (menusItem.idx === menu.idx) {
+          return { idx: menu.idx, parentIdx: menu.parentIdx, name: '수정된 메뉴' };
+        }
+
+        // child가 있다면 재귀함수 실행
+        if (menusItem.child) {
+          return {
+            ...menusItem,
+            child: modifyRecursively(menusItem.child),
+          };
+        }
+        return menusItem;
+      });
+    };
+  };
+
   return (
     <div>
       <div className="border rounded-lg m-4 py-2 px-4 h-60 w-72">
@@ -78,16 +100,7 @@ function App() {
             </Fragment>
           );
         })}
-        {/* <button
-          className="btn btn-xs mt-2"
-          onClick={() => {
-            addMenu({
-              idx: maxMenuIdx + 1,
-              name: `🌼 메뉴 ${maxMenuIdx + 1}`,
-              parentIdx: 0,
-            });
-          }}
-        ></button> */}
+        {/* 추가 버튼 */}
         <div
           className="badge badge-outline gap-2 mt-3 cursor-pointer"
           onClick={() => {
@@ -122,6 +135,8 @@ function App() {
           </svg>
           <span className="mt-[1.5px]">추가</span>
         </div>
+        {/* 수정 버튼 */}
+        <div>수정</div>
       </div>
     </div>
   );
@@ -150,19 +165,6 @@ const MenuRecursively = ({
         >
           {node.name}
         </div>
-        {/* <button
-          className="btn btn-xs"
-          onClick={() => {
-            setOpenMenus((prev) => ({ ...prev, [node.idx]: true }));
-            addMenu({
-              idx: maxMenuIdx + 1,
-              name: `🌸 메뉴 ${maxMenuIdx + 1}`,
-              parentIdx: node.idx,
-            });
-          }}
-        >
-          추가
-        </button> */}
         <div
           className="badge badge-outline gap-2 mt-[2.5px] cursor-pointer"
           onClick={() => {
