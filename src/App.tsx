@@ -68,13 +68,17 @@ function App() {
   };
 
   // 수정 함수
-  const modifyMenu = (menu: MenuType) => {
+  const modifyMenu = (updateMenu: MenuType) => {
     // 수정 재귀 함수
     const modifyRecursively = (menus: MenuType[]): MenuType[] => {
       return menus.map((menusItem) => {
         // 맵 돌려서 만난 인덱스와 수정하려는 인덱스가 같으면
-        if (menusItem.idx === menu.idx) {
-          return { idx: menu.idx, parentIdx: menu.parentIdx, name: '수정된 메뉴' };
+        if (menusItem.idx === updateMenu.idx) {
+          return {
+            idx: updateMenu.idx,
+            parentIdx: updateMenu.parentIdx,
+            name: `🍀 수정된 메뉴 ${updateMenu.idx}`,
+          };
         }
 
         // child가 있다면 재귀함수 실행
@@ -87,16 +91,32 @@ function App() {
         return menusItem;
       });
     };
+
+    // setMenu 업데이트
+    setMenu(modifyRecursively(menu));
+  };
+
+  // 삭제 함수
+  const removeMenu = (deleteMenu: MenuType) => {
+    // 삭제 재귀 함수
+    const removeRecursively = (menus: MenuType[]): MenuType[] => {
+      return menus.filter((menusItem) => menusItem.idx !== deleteMenu.idx);
+    };
   };
 
   return (
     <div>
-      <div className="border rounded-lg m-4 py-2 px-4 h-60 w-72">
+      <div className="border rounded-lg m-4 py-2 px-4 h-60 w-96">
         {menu.map((menuItem) => {
           return (
             <Fragment key={menuItem.idx}>
               {/* 재귀 컴포넌트 */}
-              <MenuRecursively node={menuItem} addMenu={addMenu} maxMenuIdx={maxMenuIdx} />
+              <MenuRecursively
+                node={menuItem}
+                addMenu={addMenu}
+                maxMenuIdx={maxMenuIdx}
+                modifyMenu={modifyMenu}
+              />
             </Fragment>
           );
         })}
@@ -135,8 +155,6 @@ function App() {
           </svg>
           <span className="mt-[1.5px]">추가</span>
         </div>
-        {/* 수정 버튼 */}
-        <div>수정</div>
       </div>
     </div>
   );
@@ -145,17 +163,19 @@ function App() {
 const MenuRecursively = ({
   node,
   addMenu,
+  modifyMenu,
   maxMenuIdx,
 }: {
   node: MenuType;
-  addMenu: (menuType: MenuType) => void;
+  addMenu: (menu: MenuType) => void;
+  modifyMenu: (Menu: MenuType) => void;
   maxMenuIdx: number;
 }) => {
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
   return (
     <div className="ml-4">
-      <div className="flex gap-4">
+      <div className="flex">
         <div
           className="cursor-pointer "
           onClick={() => {
@@ -165,8 +185,9 @@ const MenuRecursively = ({
         >
           {node.name}
         </div>
+        {/* 추가 버튼 */}
         <div
-          className="badge badge-outline gap-2 mt-[2.5px] cursor-pointer"
+          className="badge badge-outline gap-2 mt-[2.5px] cursor-pointer ml-4"
           onClick={() => {
             setOpenMenus((prev) => ({ ...prev, [node.idx]: true }));
             addMenu({
@@ -200,6 +221,37 @@ const MenuRecursively = ({
           </svg>
           <span className="mt-[1.5px]">추가</span>
         </div>
+        {/* 수정 버튼 */}
+        <div
+          className="badge badge-outline gap-2 mt-[2.5px] cursor-pointer ml-1"
+          onClick={() => {
+            modifyMenu(node);
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 21 20"
+            fill="none"
+          >
+            <path
+              d="M3.83331 16.6667H7.16665L15.9166 7.91669C16.3587 7.47467 16.607 6.87515 16.607 6.25003C16.607 5.62491 16.3587 5.02539 15.9166 4.58336C15.4746 4.14133 14.8751 3.89301 14.25 3.89301C13.6249 3.89301 13.0253 4.14133 12.5833 4.58336L3.83331 13.3334V16.6667Z"
+              stroke="#1D273B"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M11.75 5.41669L15.0833 8.75002"
+              stroke="#1D273B"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span className="mt-[1.5px]">수정</span>
+        </div>
       </div>
 
       {/* 자식의 자식 재귀 컴포넌트 */}
@@ -208,12 +260,21 @@ const MenuRecursively = ({
         node.child.map((childItem) => {
           return (
             <Fragment key={childItem.idx}>
-              <MenuRecursively node={childItem} maxMenuIdx={maxMenuIdx} addMenu={addMenu} />
+              <MenuRecursively
+                node={childItem}
+                maxMenuIdx={maxMenuIdx}
+                addMenu={addMenu}
+                modifyMenu={modifyMenu}
+              />
             </Fragment>
           );
         })}
     </div>
   );
 };
+
+{
+  /* 재귀 컴포넌트 */
+}
 
 export default App;
