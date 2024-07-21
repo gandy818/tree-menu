@@ -100,8 +100,21 @@ function App() {
   const removeMenu = (deleteMenu: MenuType) => {
     // 삭제 재귀 함수
     const removeRecursively = (menus: MenuType[]): MenuType[] => {
-      return menus.filter((menusItem) => menusItem.idx !== deleteMenu.idx);
+      return menus
+        .filter((menusItem) => menusItem.idx !== deleteMenu.idx)
+        .map((menusItem) => {
+          if (menusItem.child) {
+            return {
+              ...menusItem,
+              child: removeRecursively(menusItem.child),
+            };
+          }
+          return menusItem;
+        });
     };
+
+    // setMenu 업데이트
+    setMenu(removeRecursively(menu));
   };
 
   return (
@@ -116,6 +129,7 @@ function App() {
                 addMenu={addMenu}
                 maxMenuIdx={maxMenuIdx}
                 modifyMenu={modifyMenu}
+                removeMenu={removeMenu}
               />
             </Fragment>
           );
@@ -141,16 +155,16 @@ function App() {
             <path
               d="M10.5 4.16669V15.8334"
               stroke="#1D273B"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M4.66669 10H16.3334"
               stroke="#1D273B"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
           <span className="mt-[1.5px]">추가</span>
@@ -164,11 +178,13 @@ const MenuRecursively = ({
   node,
   addMenu,
   modifyMenu,
+  removeMenu,
   maxMenuIdx,
 }: {
   node: MenuType;
   addMenu: (menu: MenuType) => void;
-  modifyMenu: (Menu: MenuType) => void;
+  modifyMenu: (menu: MenuType) => void;
+  removeMenu: (menu: MenuType) => void;
   maxMenuIdx: number;
 }) => {
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
@@ -207,16 +223,16 @@ const MenuRecursively = ({
             <path
               d="M10.5 4.16669V15.8334"
               stroke="#1D273B"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M4.66669 10H16.3334"
               stroke="#1D273B"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
           <span className="mt-[1.5px]">추가</span>
@@ -238,19 +254,31 @@ const MenuRecursively = ({
             <path
               d="M3.83331 16.6667H7.16665L15.9166 7.91669C16.3587 7.47467 16.607 6.87515 16.607 6.25003C16.607 5.62491 16.3587 5.02539 15.9166 4.58336C15.4746 4.14133 14.8751 3.89301 14.25 3.89301C13.6249 3.89301 13.0253 4.14133 12.5833 4.58336L3.83331 13.3334V16.6667Z"
               stroke="#1D273B"
-              stroke-width="1.25"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M11.75 5.41669L15.0833 8.75002"
               stroke="#1D273B"
-              stroke-width="1.25"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
           <span className="mt-[1.5px]">수정</span>
+        </div>
+        {/* 삭제 버튼 */}
+        <div
+          className="badge badge-outline gap-2 mt-[2.5px] cursor-pointer ml-1"
+          onClick={() => {
+            removeMenu(node);
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16px" height="16px">
+            <path d="M 10 2 L 9 3 L 3 3 L 3 5 L 4.109375 5 L 5.8925781 20.255859 L 5.8925781 20.263672 C 6.023602 21.250335 6.8803207 22 7.875 22 L 16.123047 22 C 17.117726 22 17.974445 21.250322 18.105469 20.263672 L 18.107422 20.255859 L 19.890625 5 L 21 5 L 21 3 L 15 3 L 14 2 L 10 2 z M 6.125 5 L 17.875 5 L 16.123047 20 L 7.875 20 L 6.125 5 z" />
+          </svg>
+          <span className="mt-[1.5px]">삭제</span>
         </div>
       </div>
 
@@ -265,6 +293,7 @@ const MenuRecursively = ({
                 maxMenuIdx={maxMenuIdx}
                 addMenu={addMenu}
                 modifyMenu={modifyMenu}
+                removeMenu={removeMenu}
               />
             </Fragment>
           );
